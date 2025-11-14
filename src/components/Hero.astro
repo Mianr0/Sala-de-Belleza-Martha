@@ -1,0 +1,35 @@
+---
+import Inicio from "../sections/Inicio.astro";
+import Quienessomos from "../sections/Quienes.astro";
+import Servicios from "../sections/Servicios.astro";
+import Contacto from "../sections/Contacto.astro";
+---
+
+<main>
+  <video src="/public/videos/video-inicio.mp4" autoplay loop muted></video>
+  <Inicio />
+  <Quienessomos />
+  <Servicios />
+  <Contacto />
+</main>
+
+<style>
+  main {
+    display: flex;
+    padding-top: 8vw;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #ffd4f6;
+  }
+  video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+  }
+</style>

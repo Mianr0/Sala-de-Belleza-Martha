@@ -1,0 +1,224 @@
+---
+// Chatbot burbuja flotante para n8n
+---
+
+<!-- Botón flotante del chatbot -->
+<div id="chatbot-bubble" class="chatbot-bubble">
+  <div class="bubble-icon">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z"
+        fill="white"></path>
+      <circle cx="8" cy="10" r="1.5" fill="white"></circle>
+      <circle cx="12" cy="10" r="1.5" fill="white"></circle>
+      <circle cx="16" cy="10" r="1.5" fill="white"></circle>
+    </svg>
+  </div>
+  <div class="bubble-text">¡Hola! ¿En qué puedo ayudarte?</div>
+</div>
+
+<!-- Container para el chat de n8n -->
+<div id="n8n-chat-container"></div>
+
+<style>
+  .chatbot-bubble {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    animation: pulse 2s infinite;
+  }
+
+  .chatbot-bubble:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(255, 107, 157, 0.4);
+  }
+
+  .bubble-icon {
+    transition: all 0.3s ease;
+  }
+
+  .bubble-text {
+    position: absolute;
+    right: 70px;
+    background: white;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  .bubble-text::after {
+    content: "";
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 8px solid transparent;
+    border-left-color: white;
+  }
+
+  .chatbot-bubble:hover .bubble-text {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+    }
+    50% {
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.6);
+    }
+    100% {
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+    }
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .chatbot-bubble {
+      bottom: 15px;
+      right: 15px;
+      width: 55px;
+      height: 55px;
+    }
+
+    .bubble-text {
+      display: none;
+    }
+  }
+
+  /* Estilos para el chat de n8n cuando esté abierto */
+  #n8n-chat-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: all 0.3s ease;
+    opacity: 0;
+  }
+
+  #n8n-chat-container.active {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    #n8n-chat-container {
+      width: calc(100vw - 30px);
+      height: 70vh;
+      bottom: 80px;
+      right: 15px;
+      left: 15px;
+    }
+  }
+</style>
+
+<script>
+  // Configurar el chat de n8n cuando el DOM esté listo
+  document.addEventListener("DOMContentLoaded", () => {
+    let chatInitialized = false;
+    let chatWidget = null;
+
+    const bubble = document.getElementById("chatbot-bubble") as HTMLElement;
+    const container = document.getElementById(
+      "n8n-chat-container"
+    ) as HTMLElement;
+
+    if (!bubble || !container) return;
+
+    // Cargar el script de n8n dinámicamente
+    const loadN8nChat = async (): Promise<any> => {
+      try {
+        // @ts-ignore: CDN module import
+        const module = await import(
+          "https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js"
+        );
+        return module.createChat;
+      } catch (error) {
+        console.error("Error loading n8n chat:", error);
+        return null;
+      }
+    };
+
+    bubble.addEventListener("click", async () => {
+      // Toggle del container
+      container.classList.toggle("active");
+
+      // Inicializar el chat solo la primera vez
+      if (!chatInitialized) {
+        const createChat = await loadN8nChat();
+        if (createChat) {
+          chatWidget = createChat({
+            webhookUrl:
+              "https://chatbotscol.app.n8n.cloud/webhook/20e66633-78a5-495b-bac3-14e92cb083c4/chat",
+            target: "#n8n-chat-container",
+            mode: "embedded",
+            chatInputKey: "chatInput",
+            chatSessionKey: "sessionId",
+            loadPreviousSession: true,
+            showWelcomeScreen: true,
+            defaultLanguage: "es",
+            initialMessages: [
+              "¡Hola! 👋",
+              "Soy el asistente virtual del Salón de Belleza Martha. ¿En qué puedo ayudarte hoy?",
+            ],
+            i18n: {
+              es: {
+                title: "¡Hola! 👋",
+                subtitle: "Estamos aquí para ayudarte 24/7",
+                footer: "Salón de Belleza Martha",
+                getStarted: "Nueva Conversación",
+                inputPlaceholder: "Escribe tu pregunta aquí...",
+              },
+            },
+            theme: {
+              primaryColor: "#ff6b9d",
+              secondaryColor: "#c44569",
+            },
+            enableStreaming: true,
+          });
+          chatInitialized = true;
+        }
+      }
+    });
+
+    // Cerrar el chat al hacer clic fuera
+    document.addEventListener("click", (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target && !bubble.contains(target) && !container.contains(target)) {
+        container.classList.remove("active");
+      }
+    });
+  });
+</script>
