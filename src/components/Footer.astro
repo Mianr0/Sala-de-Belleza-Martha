@@ -1,3 +1,9 @@
+---
+import Facebook from "../assets/icons/Facebook.astro";
+import Instagram from "../assets/icons/Instagram.astro";
+import Whatsapp from "../assets/icons/Whatsapp.astro";
+---
+
 <footer class="footer">
   <div class="container">
     <div class="footer-content">
@@ -7,26 +13,170 @@
       </div>
       <div class="footer-section">
         <h4>Servicios</h4>
-        <ul>
-          <li><a href="#cortes">Cortes</a></li>
-          <li><a href="#peinados">Peinados</a></li>
-          <li><a href="#cepillados">Cepillados</a></li>
-          <li><a href="#trenzas">Trenzas</a></li>
-          <li><a href="#tinturas">Tinturas</a></li>
-          <li><a href="#queratinas">Queratinas</a></li>
-        </ul>
+        <div class="footer-services">
+          <ul>
+            <li><a href="#cortes">Cortes</a></li>
+            <li><a href="#peinados">Peinados</a></li>
+            <li><a href="#cepillados">Cepillados</a></li>
+          </ul>
+          <ul>
+            <li><a href="#trenzas">Trenzas</a></li>
+            <li><a href="#tinturas">Tinturas</a></li>
+            <li><a href="#queratinas">Queratinas</a></li>
+          </ul>
+        </div>
       </div>
       <div class="footer-section">
         <h4>Síguenos</h4>
         <div class="social-links">
-          <a href="#" aria-label="Facebook">📘</a>
-          <a href="#" aria-label="Instagram">📷</a>
-          <a href="#" aria-label="WhatsApp">💬</a>
+          <a
+            href="https://www.facebook.com/martha.lucia.sandoval.rojas.2025"
+            aria-label="Facebook"
+            target="_blank"
+            rel="noreferrer noopener"><Facebook /></a
+          >
+          <a
+            id="instagram"
+            href="https://www.instagram.com/martha.lucia.sandoval.rojas.2025"
+            aria-label="Instagram"
+            target="_blank"
+            rel="noreferrer noopener"><Instagram /></a
+          >
+          <a
+            href="https://wa.me/573114820079"
+            aria-label="WhatsApp"
+            target="_blank"
+            rel="noreferrer noopener"><Whatsapp /></a
+          >
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2024 Salón de Belleza Martha. Todos los derechos reservados.</p>
+      <p>
+        &copy; {new Date().getFullYear()} Salón de Belleza Martha. Todos los derechos
+        reservados.
+      </p>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer {
+    background: linear-gradient(180deg, #121212, #1a1a1a);
+    color: #eaeaea;
+    padding: 1rem 10rem;
+  }
+
+  .container {
+    margin: 0 auto;
+  }
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-section h3 {
+    font-family: "Allura";
+    font-size: 2.2rem;
+    color: #ff8d8d;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .footer-section h4 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .footer-section p {
+    margin: 0;
+    color: #cfcfcf;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  a {
+    color: #eaeaea;
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  a:hover {
+    color: #ff8d8d;
+    transform: translateX(2px);
+  }
+
+  .social-links {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .social-links a {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #2a2a2a;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+  #instagram {
+    border-radius: 10px;
+  }
+
+  .social-links a:hover {
+    background: #ff8d8d;
+    color: #1a1a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(255, 141, 141, 0.25);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 1.25rem;
+    text-align: center;
+  }
+
+  .footer-bottom p {
+    color: #bdbdbd;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .footer-services {
+    display: flex;
+    gap: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .footer {
+      padding: 2.25rem 1rem 1.25rem;
+    }
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .social-links a {
+      width: 36px;
+      height: 36px;
+    }
+  }
+</style>
