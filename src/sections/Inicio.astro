@@ -1,3 +1,4 @@
+<video src="/public/videos/video-inicio.mp4" autoplay loop muted></video>
 <section id="inicio" class="hero">
   <h2>El Lugar Donde Tu Belleza Se Transforma</h2>
   <p>
@@ -10,11 +11,21 @@
   .hero {
     position: absolute;
     top: 20vw;
+    padding-inline: 4vw;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     gap: 11vw;
+  }
+  video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
   }
   h2 {
     font-size: 6vw;

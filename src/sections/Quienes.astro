@@ -15,6 +15,7 @@
           brindarte una experiencia única, personalizada y relajante. Cada
           servicio está diseñado para que te sientas renovada y radiante.
         </p>
+        <br />
         <div class="features">
           <div class="feature">
             <h3>✨ Experiencia</h3>
@@ -30,6 +31,7 @@
           </div>
         </div>
       </div>
+      <br />
       <div class="about-image">
         <img src="/peinado.jpg" alt="Nuestro equipo profesional" />
       </div>
@@ -40,9 +42,16 @@
 <style>
   .about {
     margin: 10rem 0 4rem 0;
+    padding-inline: 10vw;
   }
   h2 {
     font-size: 3.5rem;
+    font-weight: bold;
+    font-family: "Allura";
+    color: #ff8d8d;
+  }
+  h3 {
+    font-size: 2rem;
     font-weight: bold;
     font-family: "Allura";
     color: #ff8d8d;
@@ -52,5 +61,19 @@
     font-weight: bold;
     text-align: justify;
     color: #777;
+  }
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+  .feature {
+    flex: 1;
+    text-align: center;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 </style>
