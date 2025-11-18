@@ -1,224 +1,324 @@
----
-// Chatbot burbuja flotante para n8n
----
+<script is:inline>
+  class ChatWidget {
+    constructor(config) {
+      this.config = {
+        webhookUrl: config.webhookUrl,
+        target: config.target || "body",
+        mode: config.mode || "window",
+        showWelcomeScreen: config.showWelcomeScreen !== false,
+        initialMessages: config.initialMessages || [
+          "¡Hola! ¿En qué puedo ayudarte?",
+        ],
+        i18n: config.i18n || {
+          en: {
+            title: "Chat de Soporte",
+            subtitle: "Estamos aquí para ayudarte",
+            inputPlaceholder: "Escribe tu mensaje...",
+            getStarted: "Iniciar conversación",
+          },
+        },
+      };
 
-<!-- Botón flotante del chatbot -->
-<div id="chatbot-bubble" class="chatbot-bubble">
-  <div class="bubble-icon">
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z"
-        fill="white"></path>
-      <circle cx="8" cy="10" r="1.5" fill="white"></circle>
-      <circle cx="12" cy="10" r="1.5" fill="white"></circle>
-      <circle cx="16" cy="10" r="1.5" fill="white"></circle>
-    </svg>
-  </div>
-  <div class="bubble-text">¡Hola! ¿En qué puedo ayudarte?</div>
-</div>
-
-<!-- Container para el chat de n8n -->
-<div id="n8n-chat-container"></div>
-
-<style>
-  .chatbot-bubble {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #ff6b9d, #c44569);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
-    transition: all 0.3s ease;
-    z-index: 1000;
-    animation: pulse 2s infinite;
-  }
-
-  .chatbot-bubble:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 25px rgba(255, 107, 157, 0.4);
-  }
-
-  .bubble-icon {
-    transition: all 0.3s ease;
-  }
-
-  .bubble-text {
-    position: absolute;
-    right: 70px;
-    background: white;
-    color: #333;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    white-space: nowrap;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateX(10px);
-    transition: all 0.3s ease;
-    pointer-events: none;
-  }
-
-  .bubble-text::after {
-    content: "";
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 8px solid transparent;
-    border-left-color: white;
-  }
-
-  .chatbot-bubble:hover .bubble-text {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
-    }
-    50% {
-      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.6);
-    }
-    100% {
-      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
-    }
-  }
-
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .chatbot-bubble {
-      bottom: 15px;
-      right: 15px;
-      width: 55px;
-      height: 55px;
+      this.isOpen = false;
+      this.messages = [];
+      this.init();
     }
 
-    .bubble-text {
-      display: none;
+    init() {
+      this.createChatHTML();
+      this.bindEvents();
+      this.showInitialMessages();
     }
-  }
 
-  /* Estilos para el chat de n8n cuando esté abierto */
-  #n8n-chat-container {
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 350px;
-    height: 500px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    z-index: 999;
-    transform: scale(0);
-    transform-origin: bottom right;
-    transition: all 0.3s ease;
-    opacity: 0;
-  }
+    createChatHTML() {
+      const chatHTML = `
+        <div id="n8n-chat-widget" class="n8n-chat-widget">
+          <div class="chat-toggle" id="chatToggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+          </div>
+          
+          <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+              <h3>${this.config.i18n.en.title}</h3>
+              <button class="chat-close" id="chatClose">×</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+              <!-- Los mensajes se insertan aquí dinámicamente -->
+            </div>
+            
+            <div class="chat-input-container">
+              <input type="text" id="chatInput" placeholder="${this.config.i18n.en.inputPlaceholder}">
+              <button id="chatSend">Enviar</button>
+            </div>
+          </div>
+        </div>
+      `;
 
-  #n8n-chat-container.active {
-    transform: scale(1);
-    opacity: 1;
-  }
+      // Insertar el HTML en el target especificado
+      const targetElement = document.querySelector(this.config.target);
+      targetElement.insertAdjacentHTML("beforeend", chatHTML);
 
-  @media (max-width: 768px) {
-    #n8n-chat-container {
-      width: calc(100vw - 30px);
-      height: 70vh;
-      bottom: 80px;
-      right: 15px;
-      left: 15px;
+      // Agregar estilos CSS
+      this.addStyles();
     }
-  }
-</style>
 
-<script>
-  // Configurar el chat de n8n cuando el DOM esté listo
-  document.addEventListener("DOMContentLoaded", () => {
-    let chatInitialized = false;
-    let chatWidget = null;
+    addStyles() {
+      const styles = `
+        <style>
+          .n8n-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          }
+  
+          .chat-toggle {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 107, 157);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: white;
+            transition: all 0.3s ease;
+          }
+  
+          .chat-toggle:hover {
+            background: #ff8d8d;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 18px rgba(255, 141, 141, 0.25);
+          }
+  
+          .chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 75vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+          }
 
-    const bubble = document.getElementById("chatbot-bubble") as HTMLElement;
-    const container = document.getElementById(
-      "n8n-chat-container"
-    ) as HTMLElement;
+          @media screen and (max-width: 390px) {
+            .chat-window {
+              width: 250px;
+            }
+          }
+  
+          .chat-window.active {
+            display: flex;
+          }
+  
+          .chat-header {
+            background: rgba(255, 107, 157);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+  
+          .chat-header h3 {
+            margin: 0;
+            font-size: 1rem;
+          }
+  
+          .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+          }
+  
+          .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+  
+          .message {
+            max-width: 80%;
+            padding: 0.75rem;
+            border-radius: 12px;
+            word-wrap: break-word;
+          }
+  
+          .message.bot {
+            background: #f1f3f4;
+            align-self: flex-start;
+          }
+  
+          .message.user {
+            background: rgba(255, 107, 157, 0.5);
+            color: white;
+            align-self: flex-end;
+            font-weight: bold;
+          }
+  
+          .chat-input-container {
+            padding: 1rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 0.5rem;
+          }
+  
+          .chat-input-container input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+          }
+  
+          .chat-input-container button {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 115, 157);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+          }
 
-    if (!bubble || !container) return;
+          @media (max-width: 390px) {
+            .chat-input-container input {
+              width: 65%;
+              height: auto;
+            }
+          }
+        </style>
+      `;
 
-    // Cargar el script de n8n dinámicamente
-    const loadN8nChat = async (): Promise<any> => {
+      document.head.insertAdjacentHTML("beforeend", styles);
+    }
+
+    bindEvents() {
+      const toggle = document.getElementById("chatToggle");
+      const close = document.getElementById("chatClose");
+      const send = document.getElementById("chatSend");
+      const input = document.getElementById("chatInput");
+
+      toggle.addEventListener("click", () => this.toggleChat());
+      close.addEventListener("click", () => this.closeChat());
+      send.addEventListener("click", () => this.sendMessage());
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") this.sendMessage();
+      });
+    }
+
+    toggleChat() {
+      const window = document.getElementById("chatWindow");
+      this.isOpen = !this.isOpen;
+      window.classList.toggle("active", this.isOpen);
+    }
+
+    closeChat() {
+      const window = document.getElementById("chatWindow");
+      this.isOpen = false;
+      window.classList.remove("active");
+    }
+
+    showInitialMessages() {
+      this.config.initialMessages.forEach((message) => {
+        this.addMessage(message, "bot");
+      });
+    }
+
+    sendMessage() {
+      const input = document.getElementById("chatInput");
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      // Agregar mensaje del usuario
+      this.addMessage(message, "user");
+      input.value = "";
+
+      // Enviar al webhook de n8n
+      this.sendToWebhook(message);
+    }
+
+    addMessage(content, sender) {
+      const messagesContainer = document.getElementById("chatMessages");
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${sender}`;
+      messageDiv.textContent = content;
+
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async sendToWebhook(message) {
       try {
-        // @ts-ignore: CDN module import
-        const module = await import(
-          "https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js"
-        );
-        return module.createChat;
-      } catch (error) {
-        console.error("Error loading n8n chat:", error);
-        return null;
-      }
-    };
+        const response = await fetch(this.config.webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chatInput: message,
+            sessionId: this.getSessionId(),
+          }),
+        });
 
-    bubble.addEventListener("click", async () => {
-      // Toggle del container
-      container.classList.toggle("active");
+        const data = await response.json();
 
-      // Inicializar el chat solo la primera vez
-      if (!chatInitialized) {
-        const createChat = await loadN8nChat();
-        if (createChat) {
-          chatWidget = createChat({
-            webhookUrl:
-              "https://chatbotscol.app.n8n.cloud/webhook/20e66633-78a5-495b-bac3-14e92cb083c4/chat",
-            target: "#n8n-chat-container",
-            mode: "embedded",
-            chatInputKey: "chatInput",
-            chatSessionKey: "sessionId",
-            loadPreviousSession: true,
-            showWelcomeScreen: true,
-            defaultLanguage: "es",
-            initialMessages: [
-              "¡Hola! 👋",
-              "Soy el asistente virtual del Salón de Belleza Martha. ¿En qué puedo ayudarte hoy?",
-            ],
-            i18n: {
-              es: {
-                title: "¡Hola! 👋",
-                subtitle: "Estamos aquí para ayudarte 24/7",
-                footer: "Salón de Belleza Martha",
-                getStarted: "Nueva Conversación",
-                inputPlaceholder: "Escribe tu pregunta aquí...",
-              },
-            },
-            theme: {
-              primaryColor: "#ff6b9d",
-              secondaryColor: "#c44569",
-            },
-            enableStreaming: true,
-          });
-          chatInitialized = true;
+        // Agregar respuesta del bot
+        if (data.output) {
+          this.addMessage(data.output, "bot");
         }
+      } catch (error) {
+        console.error("Error sending message:", error);
+        this.addMessage("Lo siento, hubo un error. Intenta de nuevo.", "bot");
       }
-    });
+    }
 
-    // Cerrar el chat al hacer clic fuera
-    document.addEventListener("click", (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (target && !bubble.contains(target) && !container.contains(target)) {
-        container.classList.remove("active");
+    getSessionId() {
+      let sessionId = localStorage.getItem("chat-session-id");
+      if (!sessionId) {
+        sessionId =
+          "session-" +
+          Date.now() +
+          "-" +
+          Math.random().toString(36).substr(2, 9);
+        localStorage.setItem("chat-session-id", sessionId);
       }
-    });
+      return sessionId;
+    }
+  }
+
+  // Función global para crear el chat
+  function createChat(config) {
+    return new ChatWidget(config);
+  }
+
+  // ...eliminado export CommonJS, solo global...
+
+  // Hacer disponible globalmente
+  window.createChat = createChat;
+</script>
+<script is:inline>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.createChat) {
+      window.createChat({
+        webhookUrl:
+          "https://n8n.srv966063.hstgr.cloud/webhook/ea9a7e4b-95ee-47d8-a238-793559e5eaae/chat",
+      });
+    }
   });
 </script>

@@ -26,133 +26,73 @@
     </li>
   </ul>
 </nav>
+<nav class="nav-hamburger">
+  <button class="hamburger" id="hamburgerBtn"> ☰ </button>
 
-<!-- <div class="hamburger" id="hamburger">
-  <span class="bar"></span>
-  <span class="bar"></span>
-  <span class="bar"></span>
-</div> -->
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#">Inicio</a></li>
+    <li><a href="#quienes-somos">Quienes Somos</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
 
-<!-- <style>
-
-  .nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    display: block;
+<style>
+  .nav-hamburger {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(255, 91, 141, 0.7);
+    color: #fff;
+  }
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
   }
 
-  .nav-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+  .nav-links a {
+    text-decoration: none;
+    color: white;
   }
   .hamburger {
     display: none;
-    flex-direction: column;
+    font-size: 26px;
+    background: none;
+    border: none;
+    color: white;
     cursor: pointer;
-    padding: 0.5rem;
   }
-
-  .bar {
-    width: 25px;
-    height: 3px;
-    background: white;
-    margin: 3px 0;
-    transition: 0.3s;
-    border-radius: 2px;
-  }
-
-  /* Mobile Styles */
-  @media screen and (max-width: 768px) {
-    .hamburger {
+  @media (max-width: 425px) {
+    .nav-hamburger {
       display: flex;
     }
-
-    .nav-menu {
-      position: fixed;
-      left: -100%;
-      top: 70px;
+    .nav-links {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      background: rgba(255, 91, 141, 0.8);
+      width: 160px;
+      height: 60vh;
+      border-radius: 10px;
       flex-direction: column;
-      background: white;
-      width: 100%;
-      text-align: center;
-      transition: 0.3s;
-      box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-      height: calc(100vh - 70px);
-      overflow-y: auto;
+      gap: 8vh;
+      font-weight: bold;
+      justify-content: center;
+      padding: 20px;
+      display: none;
     }
-
-    .nav-menu.active {
-      left: 0;
+    .nav-links.show {
+      display: flex;
     }
-
-    .nav-list {
-      flex-direction: column;
-      width: 100%;
-      padding: 2rem 0;
-    }
-
-    .nav-item {
-      margin: 0;
-      width: 100%;
-    }
-
-    .nav-link {
-      color: #333;
-      padding: 1rem 2rem;
-      border-radius: 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .nav-link:hover {
-      background: #ff6b9d;
-      color: white;
-    }
-
-    .dropdown-menu {
-      position: static;
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-      box-shadow: none;
-      background: #f8f9fa;
-      border-radius: 0;
-      margin-top: 0;
-    }
-
-    .dropdown-link {
-      padding: 0.75rem 3rem;
-      border-bottom: 1px solid #eee;
-    }
-
-    .hamburger.active .bar:nth-child(2) {
-      opacity: 0;
-    }
-
-    .hamburger.active .bar:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .hamburger.active .bar:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
+    .hamburger {
+      display: block;
     }
   }
-</style> -->
-
-<style>
-  /* 
-
-  .nav-menu {
-    display: flex;
-    align-items: center;
-  }*/
   .navbar {
     padding: 1rem 0;
   }
-
   .navbar-ul {
     display: flex;
     list-style: none;
@@ -160,7 +100,6 @@
     padding: 0;
     align-items: center;
   }
-
   .navbar-li {
     position: relative;
     margin: 0 0.4rem;
@@ -188,11 +127,6 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  /*   @media screen and (max-width: 1128px) {
-    .navbar-li {
-      font-size: 1.2rem;
-    }
-  }*/
   @media screen and (max-width: 860px) {
     .navbar-li {
       font-size: 2.8vw;
@@ -204,11 +138,9 @@
       display: none;
     }
   }
-
   .dropdown {
     position: relative;
   }
-
   .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -224,13 +156,11 @@
     list-style: none;
     margin: 0;
   }
-
   .dropdown:hover .dropdown-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
-
   .dropdown-link {
     color: #ff6b9d;
     padding: 0.75rem 1.5rem;
@@ -238,7 +168,6 @@
     text-decoration: none;
     transition: all 0.3s ease;
   }
-
   .dropdown-link:hover {
     background: #ff6b9d;
     color: white;
@@ -246,38 +175,14 @@
   }
 </style>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.getElementById("hamburger");
-    const navMenu = document.getElementById("nav-menu");
+<script is:inline>
+  window.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("hamburgerBtn");
+    const nav = document.getElementById("navLinks");
 
-    if (hamburger && navMenu) {
-      hamburger.addEventListener("click", function () {
-        hamburger.classList.toggle("active");
-        navMenu.classList.toggle("active");
-      });
-
-      // Close menu when clicking on a link
-      const navLinks = document.querySelectorAll(".nav-link, .dropdown-link");
-      navLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-          hamburger.classList.remove("active");
-          navMenu.classList.remove("active");
-        });
-      });
-
-      // Close menu when clicking outside
-      document.addEventListener("click", function (event) {
-        const target = event.target;
-        if (
-          target &&
-          target instanceof Node &&
-          !hamburger.contains(target) &&
-          !navMenu.contains(target)
-        ) {
-          hamburger.classList.remove("active");
-          navMenu.classList.remove("active");
-        }
+    if (btn && nav) {
+      btn.addEventListener("click", () => {
+        nav.classList.toggle("show");
       });
     }
   });
