@@ -1,46 +1,76 @@
-# Astro Starter Kit: Basics
+# Sala de Belleza Martha — Sitio web (Astro + Tailwind)
 
-```sh
-pnpm create astro@latest -- --template basics
+Sitio web estático para el salón de belleza “Martha”, construido con Astro 5 y Tailwind CSS 4 (vía `@tailwindcss/vite`). Incluye navegación responsive con menú hamburguesa, secciones de servicios, quiénes somos y contacto.
+
+## ✅ Requisitos
+
+- Node.js 18 o superior
+- pnpm (recomendado) o npm
+
+## ⚙️ Instalación
+
+```bash
+pnpm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## � Scripts
 
-## 🚀 Project Structure
+- `pnpm dev`: inicia el servidor de desarrollo en `http://localhost:4321`
+- `pnpm build`: genera la versión de producción en `./dist/`
+- `pnpm preview`: vista previa local de la build de producción
+- `pnpm astro ...`: comandos de la CLI de Astro (p. ej. `astro check`)
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🗂️ Estructura del proyecto
 
 ```text
 /
 ├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+│   └── imagenes/                  # Imágenes públicas
+├── src/
+│   ├── assets/
+│   │   ├── favicon.svg
+│   │   └── icons/                 # Iconos en componentes Astro
+│   ├── components/
+│   │   ├── Navbar.astro
+│   │   ├── Header.astro
+│   │   ├── Hero.astro
+│   │   ├── Footer.astro
+│   │   └── Chatbotia.astro
+│   ├── layouts/
+│   │   └── Layout.astro
+│   ├── pages/
+│   │   └── index.astro
+│   ├── sections/
+│   │   ├── Inicio.astro
+│   │   ├── Servicios.astro
+│   │   ├── Quienes.astro
+│   │   └── Contacto.astro
+│   └── styles/
+│       └── global.css             # Estilos globales
+├── astro.config.mjs               # Configuración Astro + Tailwind (Vite plugin)
+├── package.json
+└── pnpm-lock.yaml
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 🎨 Estilos
 
-## 🧞 Commands
+- Tailwind CSS 4 vía plugin `@tailwindcss/vite` configurado en `astro.config.mjs`.
+- Estilos adicionales en `src/styles/global.css`.
 
-All commands are run from the root of the project, from a terminal:
+## 🧩 Notas de implementación
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+- El menú hamburguesa móvil se controla en `Navbar.astro` con un script inline que espera a `DOMContentLoaded` y alterna la clase `show` en `.nav-links`.
+- Para colores con transparencia se usan valores RGBA, por ejemplo: `background: rgba(255, 91, 141, 0.7);`.
 
-## 👀 Want to learn more?
+## 🚀 Despliegue
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+El proyecto genera HTML estático en `dist`, compatible con cualquier hosting estático (Netlify, Vercel, GitHub Pages, etc.).
+
+Pasos típicos:
+
+1. `pnpm build`
+2. Sube la carpeta `dist/` a tu proveedor o conecta el repositorio para builds automáticas.
+
+## � Licencia
+
+Proyecto con fines demostrativos. Ajusta o añade licencia según tus necesidades.
